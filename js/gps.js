@@ -228,7 +228,7 @@ function sendApplicationData(form_id, token)
 	}
 
 	if (min_type == "") {
-		showAlert("문의 내용을 입력해 주세요.", null);
+		showAlert("문의 종류를 선택해 주세요.", null);
 		hideLoader();
 		return false;
 	}
