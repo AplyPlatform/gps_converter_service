@@ -252,9 +252,7 @@ function sendApplicationData(form_id, token)
 		showAlert("개인정보 처리방침에 동의해주세요.", null);
 		hideLoader();
 		return false;
-	}
-
-	$(form_id).find('input[name="form_token"]').val(token);
+	}	
 	
 	let ref = $('<input type="hidden" value="' + document.referrer + '" name="ref">');	
 	$(form_id).append(ref);	
@@ -262,15 +260,23 @@ function sendApplicationData(form_id, token)
 	$(form_id).append(ref);	
 	ref = $('<input type="hidden" value="gpscontact" name="form_kind">');	
 	$(form_id).append(ref);
-		
-	let sed = new FormData($(form_id)[0]);
 
+	grecaptcha.ready(function() {
+		grecaptcha.execute('6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7', {action: 'homepage'}).then(function(token) {
+			$(form_id).find('input[name="form_token"]').val(token);
+			let fed = new FormData($(form_id)[0]);
+			ajaxRequestForContact(fed);
+		});
+	});
+}
+
+function ajaxRequestForContact(fed) {
 	$.ajax({
 		type: "POST",
 		url: 'https://aply.biz/contact/handler.php',
 		crossDomain: true,
 		dataType: "json",
-		data:sed,
+		data:fed,
 		enctype: 'multipart/form-data', // 필수
 		processData: false,
 		contentType: false,
@@ -324,13 +330,9 @@ function setSubmitHandler(form_p_id) {
 			}
 		}
 
-		$('.page-loader').show();
-		
-		grecaptcha.ready(function() {
-	      grecaptcha.execute('6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7', {action: 'homepage'}).then(function(token) {
-	         sendApplicationData(form_id, token);
-	      });
-	  });
+		showLoader();
+
+		sendApplicationData(form_id);				
 	});
 
 	$('[name^=form_phone]').keypress(validateNumber);
