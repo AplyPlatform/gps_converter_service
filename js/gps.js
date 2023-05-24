@@ -126,7 +126,7 @@ function requestAddress() {
 	
     if (isSet($("#lat").val()) == false || isSet($("#lng").val()) == false) {
 		hideLoader();
-		showAlert("올바른 좌표를 입력해 주세요");
+		showDialog("올바른 좌표를 입력해 주세요", null);
 		return;
     }
 
@@ -148,17 +148,18 @@ function requestAddress() {
 	setCaptcha(fd, function (r) {
 		if(r.result == "success") {
 			$("#address").val(r.data.address);
-			oldAddressVal = r.data.address;					
-			hideLoader();
+			oldAddressVal = r.data.address;
+			showDialog("좌표를 주소로 변환 하였습니다.", null);
+			hideLoader();				
 		}
 		else {
-			showAlert("좌표의 변환에 오류가 발생했습니다. 다시 시도해 주세요");
+			showDialog("좌표의 변환에 오류가 발생했습니다. 다시 시도해 주세요", null);
 			hideLoader();
 		}
 		},
 		function(request,status,error) {
-		hideLoader();
-		showAlert("좌표의 변환에 오류가 발생했습니다. 다시 시도해 주세요");
+			hideLoader();
+			showDialog("좌표의 변환에 오류가 발생했습니다. 다시 시도해 주세요", null);
 		}
 	);
 
@@ -167,8 +168,8 @@ function requestAddress() {
 function requestGPS() {
 	
     if (isSet($("#address").val()) == false) {
-	    	showAlert("올바른 주소를 입력해 주세요.");
-	    	return;
+		showDialog("올바른 주소를 입력해 주세요.", null);
+	    return;
     }
 
 	let fd = new FormData();
@@ -176,7 +177,10 @@ function requestGPS() {
 	fd.append("address", encodeURI($("#address").val()));
 
     //같은 값으로 조회 시도
-	if (oldAddressVal == $("#address").val()) return;
+	if (oldAddressVal == $("#address").val()) {
+		showDialog("이전에 조회한 주소와 동일한 주소입니다.", null);	    
+		return;
+	}
 
 	oldAddressVal = $("#address").val();
 
@@ -186,8 +190,8 @@ function requestGPS() {
 	setCaptcha(fd, function (r) {
 		if(r.result == "success") {
 				if (r.data == null) {
-				showAlert("주소를 변환하는데 실패하였습니다");
-				return;
+					showDialog("주소를 변환하는데 실패하였습니다", null);
+					return;
 				}
 										
 				$("#lat").val(r.data.lat);
@@ -195,18 +199,18 @@ function requestGPS() {
 				$("#address").val(r.data.address);
 					
 				oldAddressVal = r.data.address;
-
-				showAlert("주소를 변환 하였습니다.");
+				
+				showDialog("주소를 좌표로 변환 하였습니다.", null);
 				hideLoader();					    					    					  
 		}
 		else {
 				hideLoader();
-				showAlert("주소를 잘 못 입력하셨습니다");
+				showDialog("주소를 잘 못 입력하셨습니다", null);
 		}
 	},
 	function(request,status,error) {
 		hideLoader();
-		showAlert("일시적인 오류가 발생하였습니다.");
+		showDialog("일시적인 오류가 발생하였습니다.", null);
 	}
 	);
 }
@@ -228,34 +232,34 @@ function sendApplicationData(form_id, token)
 	}
 
 	if (min_type == "") {
-		showAlert("문의 종류를 선택해 주세요.", null);
+		showDialog("문의 종류를 선택해 주세요.", null);
 		hideLoader();
 		return false;
 	}
 
 	let form_content = $("#form_content").val();
 	if (form_content == "") {
-		showAlert("문의 내용을 입력해 주세요.", null);
+		showDialog("문의 내용을 입력해 주세요.", null);
 		hideLoader();
 		return false;
 	}
 
 	let form_phone = $(form_id).find('input[name="form_phone"]').val();
 	if (form_phone == "") {
-		showAlert("전화번호를 입력해 주세요.", null);
+		showDialog("전화번호를 입력해 주세요.", null);
 		hideLoader();
 		return false;
 	}
 
 	let form_email = $(form_id).find('input[name="form_email"]').val();
 	if (form_email == "") {
-		showAlert("이메일을 입력해 주세요.", null);
+		showDialog("이메일을 입력해 주세요.", null);
 		hideLoader();
 		return false;
 	}
 
 	if ($(form_id).find("#agree_1").length > 0 && $(form_id).find("#agree_1").is(":checked") == false) {
-		showAlert("개인정보 처리방침에 동의해주세요.", null);
+		showDialog("개인정보 처리방침에 동의해주세요.", null);
 		hideLoader();
 		return false;
 	}	
@@ -291,16 +295,18 @@ function ajaxRequestForContact(form_id, fed) {
 			hideLoader();
 			if (data.result == "success") {
 				$(form_id + " input").last().remove();
-				showAlert("전송이 완료되었습니다. APLY가 연락 드리겠습니다.");				
+				showDialog("전송이 완료되었습니다. APLY가 연락 드리겠습니다.", function() {
+					location.href="/index.html";
+				});
 				return;
 			}
 			else {				
-				showAlert("오류가 발생하였습니다. 잠시 후 다시 시도해 주세요. : ");
+				showDialog("오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.", null);
 				return;
 			}
 		},
 		error: function(jqXHR, text, error){
-			showAlert("죄송합니다, 일시적인 오류가 발생하였습니다. 다시 시도 부탁드립니다.");
+			showDialog("죄송합니다, 일시적인 오류가 발생하였습니다. 다시 시도 부탁드립니다.", null);
 			hideLoader();
 		}
 	});
@@ -377,13 +383,19 @@ function GATAGM(event_name, category, label) {
     );
 }
 
-function showAlert(msg) {
-    $('#modal-title').text("APLY Service");
-    $('#modal-confirm-btn').text("확인");
+function showDialog(msg, callback) {
+	$('#askModalContent').text(msg);
+	$('#askModal').modal('show');
 
-    $('#errorModalLabel').html(msg);
-    $('#errorModal').modal('show');
+	if (callback == null) return;
+
+	$('#askModalOKButton').off('click');
+	$('#askModalOKButton').click(function () {
+			$('#askModal').modal('hide');
+			callback();
+	});
 }
+
 
 function isSet(value) {
     if (typeof (value) === 'number')
