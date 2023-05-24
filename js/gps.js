@@ -227,6 +227,12 @@ function sendApplicationData(form_id, token)
 		min_type = min_type + "/기타 문의";
 	}
 
+	if (min_type == "") {
+		showAlert("문의 내용을 입력해 주세요.", null);
+		hideLoader();
+		return false;
+	}
+
 	let form_content = $("#form_content").val();
 	if (form_content == "") {
 		showAlert("문의 내용을 입력해 주세요.", null);
@@ -265,12 +271,12 @@ function sendApplicationData(form_id, token)
 		grecaptcha.execute('6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7', {action: 'homepage'}).then(function(token) {
 			$(form_id).find('input[name="form_token"]').val(token);
 			let fed = new FormData($(form_id)[0]);
-			ajaxRequestForContact(fed);
+			ajaxRequestForContact(form_id, fed);
 		});
 	});
 }
 
-function ajaxRequestForContact(fed) {
+function ajaxRequestForContact(form_id, fed) {
 	$.ajax({
 		type: "POST",
 		url: 'https://aply.biz/contact/handler.php',
@@ -284,6 +290,7 @@ function ajaxRequestForContact(fed) {
 		success: function (data) {
 			hideLoader();
 			if (data.result == "success") {
+				$(form_id + " input").last().remove();
 				showAlert("전송이 완료되었습니다. APLY가 연락 드리겠습니다.");				
 				return;
 			}
