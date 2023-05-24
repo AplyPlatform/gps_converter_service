@@ -1,0 +1,308 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<head>	
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-LRBVFWS910"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'G-LRBVFWS910');
+	</script>
+
+	<title>GPS 좌표 <-> 주소 변환 서비스 - APLY</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<meta name="description" content="GPS좌표<->주소 변환 기능을 제공합니다 - APLY"/>
+	<meta name="keywords" content="주소,좌표,변환,변경,검색,Drone,PILOT,드론,세계일주,꿈,비행,APLY"/>
+	<meta name="author" content="aply.biz"/>
+	<link rel="shortcut icon" type="image/x-icon" href="./images/favicon.png"/>	
+  	<!-- Facebook and Twitter integration -->
+	<meta property="og:title" content="GPS좌표<->주소 변환 서비스 - APLY"/>
+	<meta property="og:image" content="./images/site_title.png"/>
+	<meta property="og:url" content="https://gps.aply.biz"/>
+	<meta property="og:site_name" content="GPS 2 ADDRESS"/>
+	<meta property="og:description" content="GPS좌표<->주소 변환 기능을 제공합니다 - APLY"/>
+	
+	<link href="./vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  	<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Abel|Raleway|Roboto|Noto+Sans+KR" rel="stylesheet">
+
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="./css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="./css/icomoon.css">
+	<!-- Themify Icons-->
+	<link rel="stylesheet" href="./css/themify-icons.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="./css/bootstrap.css">
+	<!-- Magnific Popup -->
+	<link rel="stylesheet" href="./css/magnific-popup.css">
+	
+	<!-- Owl Carousel  -->
+	<link rel="stylesheet" href="./css/owl.carousel.min.css">
+	<link rel="stylesheet" href="./css/owl.theme.default.min.css">
+
+	<link rel="stylesheet" href="./css/ol.css">
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="./css/style.css">
+	
+	<script src='https://www.google.com/recaptcha/api.js?render=6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7'></script>
+	<style>
+		.grecaptcha-badge {visibility: hidden;}
+	</style>
+	
+	</head>	
+	<body>
+
+	<div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = 'https://connect.facebook.net/ko_KR/sdk.js#xfbml=1&version=v3.5&appId=570867566598427&autoLogAppEvents=1';
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+	</script>
+
+	<div id="loading">
+		<div class="loader"></div>
+	</div>
+	
+	<div id="page">		
+		<nav class="gtco-nav" role="navigation">
+			<div class="gtco-container">
+
+				<div class="row">
+					<div class="col-sm-2 col-xs-12">
+						<div id="gtco-logo"><a href="./index.html"><img src="./images/logo_aply.png" alt="APLY GPS 서비스" style="height:24px;"></a></div>
+					</div>
+					
+				</div>
+
+			</div>
+		</nav>
+
+		<header id="gtco-header2" class="gtco-cover" role="banner">
+			<div class="gtco-container">
+					<div class="row">
+						<div class="col-md-12 text-center">
+							<h1 style="color:white">GPS 좌표 <-> 주소</h1><span class="badge badge-danger">변환 서비스</span>
+						</div>
+					</div>
+								
+					<div class="row">
+						<br><br><br><br>
+					</div>
+								
+					<div class="service-wrap">
+						<div class="row">
+					        <div class="col-md-5">
+					          	<input name="lat" id="lat" type="text" class="form-control" style="background-color:white;opacity: 0.8;" value="" placeholder="위도 : 예) 37.1234" required="">
+					        </div>
+					        <div class="col-md-5">
+					          	<input name="lng" id="lng" type="text" class="form-control" style="background-color:white;opacity: 0.8;" value="" placeholder="경도 : 예) 127.1234" required="">
+					        </div>
+					        <div class="col-md-2 text-left">
+					          	<a class="btn btn-warning btn-lg btn-block" role="button" onClick="requestAddress()" id="btnGetAddressByGPS">좌표 > 주소 변환</a>
+					        </div>
+					    </div>
+					        
+					    <div class="row">
+					        <div class="col-md-10">
+					        	<input name="address" id="address" type="text" class="form-control" style="background-color:white;opacity: 0.8;" value="" placeholder="주소">
+					        </div>
+					        <div class="col-md-2 text-left">
+					        	<a class="btn btn-info btn-lg btn-block" role="button" onClick="requestGPS()" id="btnGetGpsByAddress">주소 > 좌표 변환</a>
+					        </div>
+					    </div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<span style="word-break:keep-all;color:#fff;font-size:12px">이 사이트는 reCAPTCHA의 보호를 받으며 Google <a href='https://policies.google.com/privacy' style='color:#aff;' target='_blank'>개인정보 보호 정책</a> 및 <a href='https://policies.google.com/terms' style='color:#aff;' target='_blank'>서비스 약관</a>이 적용됩니다.</span>
+							</div>
+						</div>
+					</div>
+			</div>
+		</header>
+
+		<div class="gtco-services gtco-section">
+			<div class="gtco-container">		  		
+	        	<div class="service-wrap">
+	        		<div class="service">
+	        			<div class="row row-pb-sm">
+				        	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+								<!-- 주소<->좌표 변환 서비스 페이지 -->
+								<ins class="adsbygoogle"
+									     style="display:block"
+									     data-ad-client="ca-pub-8189520766812080"
+									     data-ad-slot="9271388509"
+									     data-ad-format="auto"
+									     data-full-width-responsive="true"></ins>
+							<script>
+									     (adsbygoogle = window.adsbygoogle || []).push({});
+							</script>	
+						</div>
+					</div>
+				</div>
+		  	</div>		
+		</div>
+		<!-- END .gtco-section -->
+
+		<div class="gtco-services gtco-section">
+            <div class="gtco-container">
+                <form role="form" method="post" id="email_up">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+								<div class="form-control" style="height:auto; padding-bottom:.05rem;">
+								<div class="row">                                
+								  <div class="col-12 col-md-3 p-b-10">
+									  <input type="checkbox" id="min_type_4" name="min_type_4" value="기타">
+									  <label class="lab_check" for="min_type_4"><span class="checkbox"></span> &nbsp;서비스 문의</label>
+								  </div>								  
+								  <div class="col-12 col-md-3 p-b-10">
+									<input type="checkbox" id="min_type_2" name="min_type_2" value="제휴">
+									<label class="lab_check" for="min_type_2"><span class="checkbox"></span> &nbsp;제휴 및 협업</label>
+								  </div>
+								  <div class="col-12 col-md-3 p-b-10">
+									<input type="checkbox" id="min_type_1" name="min_type_1" value="SW개발"> 
+									<label class="lab_check" for="min_type_1"><span class="checkbox"></span> &nbsp;SW 개발</label>
+								  </div>
+								</div>
+								<p class="help-block text-danger"></p>
+								</div>
+							</div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="form_name" id="form_name" placeholder="이름"
+                                    required="">
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="form_phone" id="form_phone"
+                                    placeholder="전화번호(-없이 입력해주세요)" required="" pattern="\d+">
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="form_email" id="form_email"
+                                    placeholder="이메일 주소" required="">
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <p><input type="checkbox" name="agree_1" id="agree_1" value="제공"><label class="lab_check"
+                                    for="agree_1"><span class="checkbox"></span> <a
+                                        href="javascript:showPrivacyDialog();">개인정보 처리방침</a> 동의 <span
+                                        class="required">(필수)</span></label></p>
+                            <hr class="m-b-30 m-t-30">
+                            <div class="text-center">
+                                <input class="btn btn-circle btn-brand btn-block" id="email_up_send" type="submit" value="연락처 남기기">
+                                    이 사이트는 reCAPTCHA의 보호를 받으며 Google <a href='https://policies.google.com/privacy' style='color:#333;' target='_blank'>개인 정보 보호 정책</a> 및 <a href='https://policies.google.com/terms' style='color:#333;' target='_blank'>서비스 약관</a>이 적용됩니다.</a>
+                            </div>
+                            <input type="hidden" name="form_token" id="form_token">
+                            <input name="form_kind" id="form_kind" type="hidden" value="recruit">                            
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+						
+		<div class="gtco-client">
+			<div class="gtco-container">
+				<div class="row">
+					<div class="col-md-12">	
+							<div class="fb-like" data-href="https://www.facebook.com/APLYPLATFORM" data-layout="standard" data-action="like" data-size="small" data-show-faces="true"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- END .gtco-client -->
+		
+		<footer id="gtco-footer" class="gtco-section" role="contentinfo">
+			<div class="gtco-container">				
+				<div class="row row-pb-md">
+					<div class="col-md-4 gtco-widget gtco-footer-paragraph">
+						<h3>GPS 좌표 <-> 주소 변환 서비스</h3>
+
+						<select id="selSites" class="form-control">
+							<option selected>Family Sites</option>
+							<option>-------------------------------------</option>
+							<option value="aply">APLY Inc.</option>
+							<option value="recruit">Recruit</option>
+							<option value="blog">Blog</option>
+							<option>-------------------------------------</option>
+							<option value="aplx">APLX</option>
+							<option value="kiosk">R&D KIOSK</option>
+						  </select>
+					</div>
+					<div class="col-md-4 gtco-footer-link">
+						<div class="row">
+							<div class="col-md-6">
+									<ul class="gtco-list-link">
+										<p><a href="#email-up" class="btn btn-white btn-outline" onClick="GATAGM('util_contactus_bottom_menu_link_click', 'CONTENT');">문의하기</a></p>
+									</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="gtco-copyright">
+				<div class="gtco-container">
+					<div class="row">
+						<div class="col-md-6 text-left">
+							<p><small>&copy; <script>var cYear=(new Date()).getFullYear();document.write(cYear);</script> <a href="https://aply.biz" target="_new">APLY Inc.</a></small></p>
+						</div>
+						<div class="col-md-6 text-right">
+							<a href="./service.html" onClick="GATAGM('util_tos_link_click', 'CONTENT');" target=_new>Terms of Use</a> &nbsp;
+							<small>powered by <a onClick="GATAGM('util_aply_homepage_link_click', 'CONTENT');" href="http://aply.biz/" target="_blank">APLY Inc.</a></small>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>			
+		
+		<div id="popup" class="ol-popup">
+			<a href="#" id="popup-closer" class="ol-popup-closer"></a>
+			<div id="popup-content"></div>
+		</div>
+
+		<div class="gototop js-top">
+			<a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+		</div>
+
+		<div class="modal fade" id="errorModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="modal-title">Notification</h5>
+					</div>
+					<div class="modal-body" id="errorModalLabel"></div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" type="button" data-dismiss="modal" id="modal-confirm-btn">Confirm</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  
+  	<!-- jQuery -->
+	<script src="./js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="./js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="./js/bootstrap.min.js"></script>	
+	
+	<script src="./js/ol.js"></script>  	
+  	<script src="./js/gps.js"></script>
+
+	</body>
+</html>
