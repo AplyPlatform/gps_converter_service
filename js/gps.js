@@ -223,10 +223,6 @@ function sendApplicationData(form_id, token)
 		min_type = min_type + "/제휴 및 협업";
 	}
 
-	if ($(form_id).find('input[name="min_type_3"]').is(":checked")) {
-		min_type = min_type + "/고급고유URL요청";
-	}
-
 	if ($(form_id).find('input[name="min_type_4"]').is(":checked")) {
 		min_type = min_type + "/기타 문의";
 	}
@@ -295,6 +291,12 @@ function sendApplicationData(form_id, token)
 			hideLoader();
 		}
 	});
+}
+
+function showPrivacyDialog() {	
+	$('#modal_title_content').text("APLY 개인정보처리방침");
+    $('#modal_body_content').load("privacy_for_email.html");
+    $('#modal-3').modal('show');
 }
 
 function validateNumber(event) {
