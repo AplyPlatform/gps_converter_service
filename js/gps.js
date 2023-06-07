@@ -28,8 +28,14 @@ const targetsInfo = [
 	["polaris", "https://polarisconsulting.modoo.at"]
 ];
 
+
+let isRecaptchaInit = false;
+
 $(function () {
 		utilInit();
+		grecaptcha.ready(function () {
+			isRecaptchaInit = true;			
+		});
 });
 
 var goToTop = function() {
@@ -105,15 +111,24 @@ function utilInit() {
 }
 
 function setCaptcha(fd, successHandler, failHandler) {
-	grecaptcha.ready(function () {
-        grecaptcha.execute('6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7', { action: 'action_name' })
-            .then(function (token) {
-							fd.append("captcha_token", token);
-						  	ajaxRequest(fd, successHandler, failHandler);
-
-            });
-  });
-
+	if (isRecaptchaInit == false) {
+		grecaptcha.ready(function () {
+			isRecaptchaInit = true;
+			grecaptcha.execute('6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7', { action: 'action_name' })
+				.then(function (token) {
+					fd.append("captcha_token", token);
+					ajaxRequest(fd, successHandler, failHandler);
+	
+				});
+		});
+	}
+	else {
+		grecaptcha.execute('6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7', { action: 'action_name' })
+				.then(function (token) {
+					fd.append("captcha_token", token);
+					ajaxRequest(fd, successHandler, failHandler);	
+				});
+	}
 }
 
 var oldAddressVal = "";
@@ -271,13 +286,25 @@ function sendApplicationData(form_id, token)
 	ref = $('<input type="hidden" value="gpscontact" name="form_kind">');	
 	$(form_id).append(ref);
 
-	grecaptcha.ready(function() {
+	if (isRecaptchaInit == false) {
+		grecaptcha.ready(function() {
+			isRecaptchaInit = true;
+
+			grecaptcha.execute('6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7', {action: 'homepage'}).then(function(token) {
+				$(form_id).find('input[name="form_token"]').val(token);
+				let fed = new FormData($(form_id)[0]);
+				ajaxRequestForContact(form_id, fed);
+			});
+		});
+	}
+	else {
 		grecaptcha.execute('6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7', {action: 'homepage'}).then(function(token) {
 			$(form_id).find('input[name="form_token"]').val(token);
 			let fed = new FormData($(form_id)[0]);
 			ajaxRequestForContact(form_id, fed);
 		});
-	});
+	}
+	
 }
 
 function ajaxRequestForContact(form_id, fed) {
