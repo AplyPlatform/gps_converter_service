@@ -382,7 +382,7 @@ function ajaxRequest(data, callback, errorcallback) {
 	$.ajax({
 		type: 'POST',
 		enctype: 'multipart/form-data',
-		url: 'https://aplylab.com/gps/backend/handler.php',
+		url: 'https://aply.biz/gps/handler.php',
 		data: data,
 		cache: false,
 		processData: false,
