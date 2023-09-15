@@ -25,7 +25,8 @@ const targetsInfo = [
 	["blog", "https://blog.naver.com/PostList.naver?blogId=jebo78&categoryNo=38&from=postList"],
 	["catchme", "https://catchme.aply.biz"],
 	["kiosk", "https://kiosk.aply.biz"],
-	["polaris", "https://polarisconsulting.modoo.at"]
+	["polaris", "https://polarisconsulting.modoo.at"],
+	["wifi", "https://wifi.aply.biz"]
 ];
 
 
