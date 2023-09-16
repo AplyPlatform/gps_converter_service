@@ -26,7 +26,8 @@ const targetsInfo = [
 	["catchme", "https://catchme.aply.biz"],
 	["kiosk", "https://kiosk.aply.biz"],
 	["polaris", "https://polarisconsulting.modoo.at"],
-	["wifi", "https://wifi.aply.biz"]
+	["wifi", "https://wifi.aply.biz"],
+	["store", "https://smartstore.naver.com/aqr"]
 ];
 
 
