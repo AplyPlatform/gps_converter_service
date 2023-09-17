@@ -237,15 +237,19 @@ function sendApplicationData(form_id, token)
 {
 	let min_type = "";
 	if ($(form_id).find('input[name="min_type_1"]').is(":checked")) {
-		min_type = "/SW개발";
+		min_type = "/서비스문의";
 	}
 
 	if ($(form_id).find('input[name="min_type_2"]').is(":checked")) {
-		min_type = min_type + "/제휴 및 협업";
+		min_type = min_type + "/제휴및협업";
+	}
+
+	if ($(form_id).find('input[name="min_type_3"]').is(":checked")) {
+		min_type = min_type + "/SW개발";
 	}
 
 	if ($(form_id).find('input[name="min_type_4"]').is(":checked")) {
-		min_type = min_type + "/기타 문의";
+		min_type = min_type + "/기타문의";
 	}
 
 	if (min_type == "") {
