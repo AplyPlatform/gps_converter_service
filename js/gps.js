@@ -85,7 +85,7 @@ function setCaptcha(fd, successHandler, failHandler) {
 			turnstile.render('#turnstileWidget', {
 				sitekey: '0x4AAAAAAA62_43H2MO9goDN',
 				callback: function(token) {
-					fd.append("captcha_token", token);
+					fd.append("form_token", token);
 					ajaxRequest(fd, successHandler, failHandler);
 				},
 			});
@@ -95,7 +95,7 @@ function setCaptcha(fd, successHandler, failHandler) {
 		turnstile.render('#turnstileWidget', {
 			sitekey: '0x4AAAAAAA62_43H2MO9goDN',
 			callback: function(token) {
-				fd.append("captcha_token", token);
+				fd.append("form_token", token);
 				ajaxRequest(fd, successHandler, failHandler);
 			},
 		});
