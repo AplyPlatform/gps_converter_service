@@ -48,14 +48,10 @@
 	<!-- Theme style  -->
 	<link rel="stylesheet" href="./css/style.css">
 	
-	<script src='https://www.google.com/recaptcha/api.js?render=6LfPn_UUAAAAAN-EHnm2kRY9dUT8aTvIcfrvxGy7'></script>
-	<style>
-		.grecaptcha-badge {visibility: hidden;}
-	</style>
-	
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
 	</head>	
 	<body>
-
+	<div id="turnstileWidget"></div>
 	<div id="fb-root"></div>
 	<script>(function(d, s, id) {
 	  var js, fjs = d.getElementsByTagName(s)[0];
