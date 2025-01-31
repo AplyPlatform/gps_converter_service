@@ -67,7 +67,7 @@ function utilInit() {
 		}
 	});	
 
-	sendAAPIContactFormData("gpscontact");
+	AAPI_setContactForm("gpscontact");
 
 	goToTop();
 	hideLoader();
