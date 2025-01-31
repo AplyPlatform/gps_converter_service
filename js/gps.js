@@ -51,7 +51,7 @@ function hideLoader() {
 
 function utilInit() {
 
-	showLoader();		
+	showLoader();
 	
 	$("#address").keypress(function (e) {
 		if (e.which == 13){
