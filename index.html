@@ -203,11 +203,12 @@
 
 					<!-- 개인정보 동의 + 전송 -->
 					<div class="contact-footer">
-						<label class="privacy-agree">
+						<div class="privacy-agree">
 							<input type="checkbox" name="form_contact_agree_1" id="form_contact_agree_1" value="제공">
-							<span class="privacy-agree-box"></span>
-							<a style="cursor:pointer;" id="form_contact_privacy_link">개인정보 처리방침</a> 동의 <span class="required">*</span>
-						</label>
+							<label for="form_contact_agree_1" style="cursor:pointer; margin-left:4px;">동의</label>
+							<a id="form_contact_privacy_link" style="cursor:pointer;">개인정보 처리방침</a>
+							<span class="required">*</span>
+						</div>
 						<div class="contact-submit-wrap">
 							<button class="contact-submit-btn" id="form_contact_send">보내기</button>
 							<div id="form_contact_send_loading" style="display:none; margin-top:12px; text-align:center;">
