@@ -99,6 +99,8 @@ function initMap() {
 
 	gpsMap = new ol.Map({
 		target: 'gpsMap',
+		// 더블 클릭은 마커 이동에 사용하므로 기본 더블 클릭 줌은 끔
+		interactions: ol.interaction.defaults({ doubleClickZoom: false }),
 		layers: [
 			tileLayer,
 			new ol.layer.Vector({ source: gpsMarkerSource })
@@ -116,8 +118,8 @@ function initMap() {
 	});
 	gpsMap.addInteraction(translate);
 
-	// 지도 클릭 시 마커 이동 (마커가 아직 없을 때 배치 용도 포함)
-	gpsMap.on('singleclick', function (e) {
+	// 지도 더블 클릭 시 마커 이동 (마커가 아직 없을 때 배치 용도 포함)
+	gpsMap.on('dblclick', function (e) {
 		if (gpsMap.hasFeatureAtPixel(e.pixel)) return;
 		if (gpsMarkerSource.getFeatures().length == 0) gpsMarkerSource.addFeature(gpsMarker);
 		gpsMarker.setGeometry(new ol.geom.Point(e.coordinate));
