@@ -1727,7 +1727,43 @@ form label {font-weight: normal !important;}
   background: rgba(255, 255, 255, 0.18);
 }
 
+/* ===== GPS 지도 ===== */
+
+.gps-map-wrap {
+  display: none;
+  max-width: 760px;
+  margin: 1.25rem auto 0;
+}
+.gps-map-wrap.is-visible { display: block; }
+
+.gps-map {
+  width: 100%;
+  height: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #e5e3df;
+}
+
+.gps-map-hint {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  text-align: center;
+  margin: 0.6rem 0 0;
+  word-break: keep-all;
+}
+
+.map-location-info {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.6rem 1rem;
+  margin: 0;
+}
+.map-location-info dt { font-weight: 700; color: #555; }
+.map-location-info dd { margin: 0; color: #333; word-break: break-all; }
+
 @media screen and (max-width: 640px) {
+  .gps-map { height: 300px; }
   .gps-card { padding: 1.25rem; }
   .gps-input, .gps-btn { width: 100%; flex: none; }
   .gps-input-wide { width: 100%; }

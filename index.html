@@ -100,6 +100,10 @@
 						</div>
 					</div>
 				</div>
+				<div class="gps-map-wrap">
+					<div id="gpsMap" class="gps-map"></div>
+					<p class="gps-map-hint">지도를 클릭하거나 마커를 드래그하면 해당 위치의 좌표와 주소를 확인할 수 있습니다.</p>
+				</div>
 				<p class="text-center" style="color:rgba(255,255,255,0.5); font-size:11px; margin-top:1rem; word-break:keep-all;">
 					이 사이트는 Turnstile의 보호를 받으며 Cloudflare
 					<a href='https://www.cloudflare.com/ko-kr/privacypolicy/' style="color:rgba(255,255,255,0.65);" target='_blank'>개인정보처리방침</a> 및
@@ -313,6 +317,33 @@
 			</div>
 		</div>
 
+		<!-- 모달: 지도 마커 위치 정보 -->
+		<div class="modal" id="mapLocationModal" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">선택한 위치 정보</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true" class="icon-x"></span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<dl class="map-location-info">
+							<dt>위도</dt>
+							<dd id="mapLocationLat"></dd>
+							<dt>경도</dt>
+							<dd id="mapLocationLng"></dd>
+							<dt>주소</dt>
+							<dd id="mapLocationAddress"></dd>
+						</dl>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" type="button" data-dismiss="modal">확인</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- 모달: AAPI 알림 -->
 		<div class="modal" id="AAPI_askModal" role="dialog" aria-hidden="true">
 			<div class="modal-dialog" role="document">
@@ -383,7 +414,7 @@
 	</script>
 	<script src="./js/ol.js"></script>
 	<script src="https://home.aply.biz/assets/js/aplyServices.js?v=20250908_01"></script>
-	<script src="./js/gps.js?v=20250131_01"></script>
+	<script src="./js/gps.js?v=20260923_02"></script>
 	<script>
 	$(document).on('click', '#form_contact_privacy_link', function(e) {
 		e.preventDefault();

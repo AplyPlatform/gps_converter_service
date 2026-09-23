@@ -69,8 +69,174 @@ function utilInit() {
 
 	AAPI_setContactForm("gpscontact");
 
+	initMap();
+
 	goToTop();
 	hideLoader();
+}
+
+var gpsMap = null;
+var gpsMarker = null;
+var gpsMarkerSource = null;
+
+var MARKER_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="44" viewBox="0 0 32 44">'
+	+ '<path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 28 16 28s16-16 16-28C32 7.16 24.84 0 16 0z" fill="#e74c3c" stroke="#fff" stroke-width="2"/>'
+	+ '<circle cx="16" cy="16" r="6" fill="#fff"/></svg>';
+
+function initMap() {
+	gpsMarker = new ol.Feature();
+	gpsMarker.setStyle(new ol.style.Style({
+		image: new ol.style.Icon({
+			src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(MARKER_SVG),
+			anchor: [0.5, 1]
+		})
+	}));
+
+	gpsMarkerSource = new ol.source.Vector();
+
+	var tileLayer = new ol.layer.Tile({ source: createOsmSource() });
+	watchTileErrors(tileLayer);
+
+	gpsMap = new ol.Map({
+		target: 'gpsMap',
+		layers: [
+			tileLayer,
+			new ol.layer.Vector({ source: gpsMarkerSource })
+		],
+		view: new ol.View({
+			center: ol.proj.fromLonLat([126.9780, 37.5665]),
+			zoom: 12
+		})
+	});
+
+	// 마커 드래그
+	var translate = new ol.interaction.Translate({ features: new ol.Collection([gpsMarker]) });
+	translate.on('translateend', function (e) {
+		onMarkerMoved(e.coordinate);
+	});
+	gpsMap.addInteraction(translate);
+
+	// 지도 클릭 시 마커 이동 (마커가 아직 없을 때 배치 용도 포함)
+	gpsMap.on('singleclick', function (e) {
+		if (gpsMap.hasFeatureAtPixel(e.pixel)) return;
+		if (gpsMarkerSource.getFeatures().length == 0) gpsMarkerSource.addFeature(gpsMarker);
+		gpsMarker.setGeometry(new ol.geom.Point(e.coordinate));
+		onMarkerMoved(e.coordinate);
+	});
+
+	gpsMap.on('pointermove', function (e) {
+		if (e.dragging) return;
+		gpsMap.getTargetElement().style.cursor = gpsMap.hasFeatureAtPixel(e.pixel) ? 'move' : '';
+	});
+}
+
+// OSM 타일 사용 정책상 Referer 가 필요하므로 no-referrer 환경에서도 origin 을 보내도록 지정
+function referrerTileLoad(tile, src) {
+	var img = tile.getImage();
+	img.referrerPolicy = 'strict-origin-when-cross-origin';
+	img.src = src;
+}
+
+function createOsmSource() {
+	// OSM 이 권장하는 단일 호스트 사용 (a/b/c 서브도메인은 deprecated)
+	return new ol.source.OSM({
+		url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+		tileLoadFunction: referrerTileLoad
+	});
+}
+
+// OSM 타일이 계속 실패(403 등)하면 OSM France 의 HOT 타일 서버로 전환 (한글 라벨 지원)
+function createFallbackSource() {
+	return new ol.source.XYZ({
+		url: 'https://{a-c}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+		attributions: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors, tiles by <a href="https://www.hotosm.org/" target="_blank">HOT</a> hosted by <a href="https://www.openstreetmap.fr/" target="_blank">OSM France</a>',
+		crossOrigin: 'anonymous',
+		maxZoom: 20,
+		tileLoadFunction: referrerTileLoad
+	});
+}
+
+function watchTileErrors(tileLayer) {
+	var errorCount = 0;
+	var loadCount = 0;
+	var source = tileLayer.getSource();
+	var onLoad = function () { loadCount++; };
+	var onError = function () {
+		errorCount++;
+		if (loadCount == 0 && errorCount >= 3) {
+			source.un('tileloadend', onLoad);
+			source.un('tileloaderror', onError);
+			tileLayer.setSource(createFallbackSource());
+		}
+	};
+	source.on('tileloadend', onLoad);
+	source.on('tileloaderror', onError);
+}
+
+function revealMap() {
+	var $wrap = $(".gps-map-wrap");
+	if (!$wrap.hasClass("is-visible")) {
+		$wrap.addClass("is-visible");
+		gpsMap.updateSize();
+	}
+
+	$('html, body').stop().animate({
+		scrollTop: $(".gps-card").offset().top - 16
+	}, 500, 'easeInOutExpo');
+}
+
+function showLocationOnMap(lat, lng) {
+	lat = lat * 1;
+	lng = lng * 1;
+	if (gpsMap == null || isNaN(lat) || isNaN(lng)) return;
+
+	revealMap();
+
+	var coord = ol.proj.fromLonLat([lng, lat]);
+	if (gpsMarkerSource.getFeatures().length == 0) gpsMarkerSource.addFeature(gpsMarker);
+	gpsMarker.setGeometry(new ol.geom.Point(coord));
+	gpsMap.getView().animate({ center: coord, zoom: Math.max(gpsMap.getView().getZoom(), 16), duration: 500 });
+}
+
+function onMarkerMoved(coordinate) {
+	var lonLat = ol.proj.toLonLat(coordinate);
+	var lat = Math.round(lonLat[1] * 1000000) / 1000000;
+	var lng = Math.round(lonLat[0] * 1000000) / 1000000;
+
+	$("#lat").val(lat);
+	$("#lng").val(lng);
+
+	AAPI_GA_EVENT("util_map_marker_moved", "GPS", lat + "," + lng);
+
+	let fd = new FormData();
+	fd.append("action", "address_by_gps");
+	fd.append("lat", lat);
+	fd.append("lng", lng);
+
+	showLoader();
+	setCaptcha(fd, function (r) {
+		hideLoader();
+		var address = null;
+		if (r.result == "success" && r.data != null && AAPI_isSet(r.data.address)) {
+			address = r.data.address;
+			$("#address").val(address);
+			oldAddressVal = address;
+			oldLatVal = lat;
+			oldLngVal = lng;
+		}
+		showMapLocationModal(lat, lng, address);
+	},
+	function (request, status, error) {
+		hideLoader();
+		showMapLocationModal(lat, lng, null);
+	});
+}
+
+function showMapLocationModal(lat, lng, address) {
+	$("#mapLocationLat").text(lat);
+	$("#mapLocationLng").text(lng);
+	$("#mapLocationAddress").text(address != null ? address : "해당 위치의 주소를 찾을 수 없습니다.");
+	$("#mapLocationModal").modal('show');
 }
 
 function setCaptcha(fd, successHandler, failHandler) {
@@ -113,6 +279,7 @@ function requestAddress() {
 		if(r.result == "success") {
 			$("#address").val(r.data.address);
 			oldAddressVal = r.data.address;
+			showLocationOnMap(oldLatVal, oldLngVal);
 			AAPI_showDialog("좌표를 주소로 변환 하였습니다.");
 			hideLoader();				
 		}
@@ -163,7 +330,10 @@ function requestGPS() {
 				$("#address").val(r.data.address);
 					
 				oldAddressVal = r.data.address;
-				
+				oldLatVal = r.data.lat * 1;
+				oldLngVal = r.data.lng * 1;
+				showLocationOnMap(r.data.lat, r.data.lng);
+
 				AAPI_showDialog("주소를 좌표로 변환 하였습니다.");
 				hideLoader();					    					    					  
 		}
