@@ -329,12 +329,21 @@
 					</div>
 					<div class="modal-body">
 						<dl class="map-location-info">
-							<dt>위도</dt>
-							<dd id="mapLocationLat"></dd>
-							<dt>경도</dt>
-							<dd id="mapLocationLng"></dd>
-							<dt>주소</dt>
-							<dd id="mapLocationAddress"></dd>
+							<div class="map-location-row">
+								<dt>위도</dt>
+								<dd id="mapLocationLat"></dd>
+								<button type="button" class="copy-btn" data-copy-target="#mapLocationLat" title="위도 복사" aria-label="위도 복사"></button>
+							</div>
+							<div class="map-location-row">
+								<dt>경도</dt>
+								<dd id="mapLocationLng"></dd>
+								<button type="button" class="copy-btn" data-copy-target="#mapLocationLng" title="경도 복사" aria-label="경도 복사"></button>
+							</div>
+							<div class="map-location-row">
+								<dt>주소</dt>
+								<dd id="mapLocationAddress"></dd>
+								<button type="button" class="copy-btn" data-copy-target="#mapLocationAddress" id="mapLocationAddressCopy" title="주소 복사" aria-label="주소 복사"></button>
+							</div>
 						</dl>
 					</div>
 					<div class="modal-footer">
@@ -414,7 +423,7 @@
 	</script>
 	<script src="./js/ol.js"></script>
 	<script src="https://home.aply.biz/assets/js/aplyServices.js?v=20250908_01"></script>
-	<script src="./js/gps.js?v=20260923_02"></script>
+	<script src="./js/gps.js?v=20260923_03"></script>
 	<script>
 	$(document).on('click', '#form_contact_privacy_link', function(e) {
 		e.preventDefault();

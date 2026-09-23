@@ -236,8 +236,47 @@ function showMapLocationModal(lat, lng, address) {
 	$("#mapLocationLat").text(lat);
 	$("#mapLocationLng").text(lng);
 	$("#mapLocationAddress").text(address != null ? address : "해당 위치의 주소를 찾을 수 없습니다.");
+	$("#mapLocationAddressCopy").prop("disabled", address == null);
+	$("#mapLocationModal .copy-btn").removeClass("is-copied").html(COPY_ICON_SVG);
 	$("#mapLocationModal").modal('show');
 }
+
+var COPY_ICON_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+var COPIED_ICON_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+function copyText(text, onSuccess) {
+	if (navigator.clipboard && window.isSecureContext) {
+		navigator.clipboard.writeText(text).then(onSuccess, function () { copyTextFallback(text, onSuccess); });
+		return;
+	}
+	copyTextFallback(text, onSuccess);
+}
+
+// http 환경 등 Clipboard API 를 쓸 수 없을 때
+function copyTextFallback(text, onSuccess) {
+	var $temp = $("<textarea readonly>").css({ position: "fixed", top: 0, left: "-9999px" }).val(text).appendTo("body");
+	$temp[0].select();
+	var ok = false;
+	try { ok = document.execCommand("copy"); } catch (e) {}
+	$temp.remove();
+	if (ok) onSuccess();
+	else AAPI_showDialog("복사하지 못했습니다. 직접 선택하여 복사해 주세요.");
+}
+
+$(document).on("click", "#mapLocationModal .copy-btn", function () {
+	var $btn = $(this);
+	var text = $($btn.data("copy-target")).text();
+	if (!AAPI_isSet(text)) return;
+
+	copyText(text, function () {
+		$btn.addClass("is-copied").html(COPIED_ICON_SVG);
+		clearTimeout($btn.data("copy-timer"));
+		$btn.data("copy-timer", setTimeout(function () {
+			$btn.removeClass("is-copied").html(COPY_ICON_SVG);
+		}, 1500));
+	});
+	AAPI_GA_EVENT("util_map_modal_copy_click", "GPS", $btn.data("copy-target"));
+});
 
 function setCaptcha(fd, successHandler, failHandler) {
 	AAPI_getCaptchaToken(function(token) {
