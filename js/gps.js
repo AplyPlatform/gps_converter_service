@@ -291,6 +291,48 @@ var oldAddressVal = "";
 var oldLatVal = -999;
 var oldLngVal = -999;
 
+// 브라우저 Geolocation API 로 현재 위치를 읽어 GPS -> 주소 변환까지 수행
+function requestCurrentLocation() {
+	if (!navigator.geolocation) {
+		AAPI_showDialog("이 브라우저는 위치 정보 기능을 지원하지 않습니다.");
+		return;
+	}
+
+	if (!window.isSecureContext) {
+		AAPI_showDialog("위치 정보는 보안 연결(https)에서만 사용할 수 있습니다.");
+		return;
+	}
+
+	AAPI_GA_EVENT("util_current_location_btn_click", "GPS", "");
+
+	var $btn = $("#btnGetCurrentLocation");
+	$btn.prop("disabled", true);
+	showLoader();
+
+	navigator.geolocation.getCurrentPosition(function (position) {
+		$btn.prop("disabled", false);
+
+		$("#lat").val(Math.round(position.coords.latitude * 1000000) / 1000000);
+		$("#lng").val(Math.round(position.coords.longitude * 1000000) / 1000000);
+
+		// 이전 조회 좌표와 같아도 항상 변환하도록 초기화
+		oldLatVal = -999;
+		oldLngVal = -999;
+		requestAddress();
+	},
+	function (error) {
+		$btn.prop("disabled", false);
+		hideLoader();
+
+		var message = "현재 위치를 가져오지 못했습니다. 다시 시도해 주세요.";
+		if (error.code == error.PERMISSION_DENIED) message = "위치 정보 접근 권한이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해 주세요.";
+		else if (error.code == error.POSITION_UNAVAILABLE) message = "현재 위치 정보를 확인할 수 없습니다.";
+		else if (error.code == error.TIMEOUT) message = "위치 정보를 가져오는 시간이 초과되었습니다. 다시 시도해 주세요.";
+		AAPI_showDialog(message);
+	},
+	{ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+}
+
 function requestAddress() {
 	let fd = new FormData();
 	fd.append("action", "address_by_gps");

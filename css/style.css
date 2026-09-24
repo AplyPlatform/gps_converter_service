@@ -1710,6 +1710,18 @@ form label {font-weight: normal !important;}
 .gps-btn-addr { background: #17a2b8; color: #fff; }
 .gps-btn-addr:hover { background: #138496; }
 
+.gps-btn-locate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: #fff;
+  color: #000;
+}
+.gps-btn-locate:hover { background: #f0f0f0; }
+.gps-btn-locate:disabled { opacity: 0.6; cursor: wait; transform: none; box-shadow: none; }
+
 .gps-divider {
   display: flex;
   align-items: center;
@@ -1719,6 +1731,7 @@ form label {font-weight: normal !important;}
   font-size: 11px;
   letter-spacing: 0.05em;
 }
+.gps-divider:empty { gap: 0; }
 .gps-divider::before,
 .gps-divider::after {
   content: '';

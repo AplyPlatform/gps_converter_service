@@ -99,6 +99,13 @@
 							<button class="gps-btn gps-btn-addr" onclick="requestGPS()" id="btnGetGpsByAddress">변환 →</button>
 						</div>
 					</div>
+					<div class="gps-divider"></div>
+					<div class="gps-section">
+						<button type="button" class="gps-btn gps-btn-locate" onclick="requestCurrentLocation()" id="btnGetCurrentLocation">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
+							시스템에서 현재 위치 정보 읽기
+						</button>
+					</div>
 				</div>
 				<div class="gps-map-wrap">
 					<div id="gpsMap" class="gps-map"></div>
@@ -423,7 +430,7 @@
 	</script>
 	<script src="./js/ol.js"></script>
 	<script src="https://home.aply.biz/assets/js/aplyServices.js?v=20250908_01"></script>
-	<script src="./js/gps.js?v=20260923_04"></script>
+	<script src="./js/gps.js?v=20260924_01"></script>
 	<script>
 	$(document).on('click', '#form_contact_privacy_link', function(e) {
 		e.preventDefault();
