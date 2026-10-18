@@ -1827,6 +1827,26 @@ form label {font-weight: normal !important;}
 .gps-qr-status { color: #ffd2d2; font-size: 13px; margin: 0.6rem 0 0; }
 .gps-qr-status:empty { display: none; }
 
+.gps-map-limit {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  text-align: center;
+  margin: 0.25rem 0 0;
+}
+.gps-map-limit:empty { display: none; }
+.gps-map-limit.is-locked { color: #ffd2d2; }
+
+.map-location-notice {
+  margin: 1rem 0 0;
+  padding: 0.6rem 0.8rem;
+  background: #fff4e5;
+  border-radius: 6px;
+  color: #8a5300;
+  font-size: 13px;
+  word-break: keep-all;
+}
+.map-location-notice:empty { display: none; }
+
 .map-location-info { margin: 0; }
 .map-location-row {
   display: grid;
