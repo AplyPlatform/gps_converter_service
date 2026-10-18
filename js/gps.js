@@ -238,9 +238,6 @@ function refreshMarkerMoveLimit() {
 	if (locked) {
 		$status.addClass("is-locked").text("마커 이동 횟수를 모두 사용했습니다. " + formatUnlockTime(state.lockedUntil) + " 이후에 다시 이용할 수 있습니다.");
 	}
-	else {
-		$status.removeClass("is-locked").text("남은 마커 이동 횟수: " + (MARKER_MOVE_LIMIT - state.count) + "/" + MARKER_MOVE_LIMIT + "회");
-	}
 
 	clearTimeout(markerMoveUnlockTimer);
 	if (locked) markerMoveUnlockTimer = setTimeout(refreshMarkerMoveLimit, Math.max(state.lockedUntil - Date.now(), 0) + 1000);
