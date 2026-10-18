@@ -70,9 +70,29 @@ function utilInit() {
 	AAPI_setContactForm("gpscontact");
 
 	initMap();
+	initLocationQR();
 
 	goToTop();
 	hideLoader();
+
+	loadLocationFromUrl();
+}
+
+// QR 코드로 접속한 경우 (?lat=..&lng=..) 해당 좌표를 바로 변환해 지도에 표시
+function loadLocationFromUrl() {
+	var params = new URLSearchParams(window.location.search);
+	var lat = parseFloat(params.get("lat"));
+	var lng = parseFloat(params.get("lng"));
+	if (isNaN(lat) || isNaN(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return;
+
+	$("#lat").val(lat);
+	$("#lng").val(lng);
+
+	// 이미 QR 이 만들어진 위치이므로 같은 좌표로 QR 을 다시 만들지 않음
+	lastQRLocation = makeQRLocationKey(lat, lng);
+
+	AAPI_GA_EVENT("util_location_from_qr", "GPS", lat + "," + lng);
+	requestAddress();
 }
 
 var gpsMap = null;
@@ -225,6 +245,7 @@ function onMarkerMoved(coordinate) {
 			oldAddressVal = address;
 			oldLatVal = lat;
 			oldLngVal = lng;
+			generateLocationQR(lat, lng);
 		}
 		showMapLocationModal(lat, lng, address);
 	},
@@ -265,7 +286,7 @@ function copyTextFallback(text, onSuccess) {
 	else AAPI_showDialog("복사하지 못했습니다. 직접 선택하여 복사해 주세요.");
 }
 
-$(document).on("click", "#mapLocationModal .copy-btn", function () {
+$(document).on("click", ".copy-btn[data-copy-target]", function () {
 	var $btn = $(this);
 	var text = $($btn.data("copy-target")).text();
 	if (!AAPI_isSet(text)) return;
@@ -279,6 +300,117 @@ $(document).on("click", "#mapLocationModal .copy-btn", function () {
 	});
 	AAPI_GA_EVENT("util_map_modal_copy_click", "GPS", $btn.data("copy-target"));
 });
+
+// ===== 위치 QR 코드 (qr.aply.biz 와 같은 백엔드 사용) =====
+
+var QR_API_HANDLER = "https://aplx.link/qr/handler.php";
+var GPS_SITE_URL = "https://gps.aply.biz/";
+
+var gpsQRCode = null;
+var lastQRLocation = "";
+var currentQRId = "";
+
+function initLocationQR() {
+	// 다운로드용으로 크게 만들고 화면에는 CSS 로 축소해 표시
+	gpsQRCode = new QRCodeStyling({
+		width: 640,
+		height: 640,
+		type: "canvas",
+		data: GPS_SITE_URL,
+		dotsOptions: { color: "#000000", type: "extra-rounded" },
+		backgroundOptions: { color: "#ffffff" },
+		qrOptions: { errorCorrectionLevel: "L" },
+		cornersSquareOptions: { type: "extra-rounded" },
+		cornersDotOptions: { type: "dot" }
+	});
+	gpsQRCode.append(document.getElementById("gpsQRImage"));
+
+	$("#gpsQRArea .copy-btn").html(COPY_ICON_SVG);
+
+	$("#btnDownloadQR").click(function () {
+		AAPI_GA_EVENT("util_qr_download_click", "GPS", currentQRId);
+		gpsQRCode.download({ name: "GPS_QR_" + (currentQRId != "" ? currentQRId : "location"), extension: "png" });
+	});
+}
+
+function makeQRLocationKey(lat, lng) {
+	return (Math.round(lat * 1000000) / 1000000) + "," + (Math.round(lng * 1000000) / 1000000);
+}
+
+// 변환이 완료된 좌표로 고유 QR 코드와 단축 주소를 생성
+function generateLocationQR(lat, lng) {
+	lat = Math.round(lat * 1000000) / 1000000;
+	lng = Math.round(lng * 1000000) / 1000000;
+	if (isNaN(lat) || isNaN(lng)) return;
+
+	// 같은 위치로 이미 생성했거나 생성 중이면 다시 요청하지 않음
+	var key = makeQRLocationKey(lat, lng);
+	if (key == lastQRLocation) return;
+	lastQRLocation = key;
+
+	var targetUrl = GPS_SITE_URL + "?lat=" + lat + "&lng=" + lng;
+
+	let fd = new FormData();
+	fd.append("act", "set");
+	fd.append("kind", "url");
+	fd.append("val", targetUrl);
+	fd.append("ssid", "");
+	fd.append("password", "");
+	fd.append("hidden", "N");
+	fd.append("enc", "");
+	fd.append("ref", document.referrer);
+
+	$("#gpsQRStatus").text("");
+	$("#gpsQRArea").addClass("is-visible is-loading");
+
+	var onFail = function (message) {
+		if (key != lastQRLocation) return;
+		lastQRLocation = "";
+		$("#gpsQRArea").removeClass("is-loading");
+		$("#gpsQRShortUrl").text("").attr("href", "#");
+		$("#gpsQRId").text("");
+		currentQRId = "";
+		$("#gpsQRStatus").text(message);
+	};
+
+	AAPI_getCaptchaToken(function (token) {
+		fd.append("form_token", token);
+		$.ajax({
+			url: QR_API_HANDLER,
+			type: "POST",
+			dataType: "json",
+			enctype: "multipart/form-data",
+			processData: false,
+			cache: false,
+			contentType: false,
+			data: fd,
+			success: function (r) {
+				// 응답 전에 다른 위치로 바뀌었으면 무시
+				if (key != lastQRLocation) return;
+
+				if (r == null || r.result != "success" || r.data == null) {
+					onFail(r != null && AAPI_isSet(r.message) ? r.message : "QR 코드를 생성하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+					return;
+				}
+
+				var shortUrl = AAPI_isSet(r.data.short_url) ? r.data.short_url : targetUrl;
+				currentQRId = AAPI_isSet(r.data.qr_id) ? r.data.qr_id : "";
+
+				gpsQRCode.update({ data: shortUrl });
+				$("#gpsQRShortUrl").text(shortUrl).attr("href", shortUrl);
+				$("#gpsQRId").text(currentQRId);
+				$("#gpsQRArea .copy-btn").removeClass("is-copied").html(COPY_ICON_SVG);
+				$("#gpsQRId").closest(".gps-qr-field").toggle(currentQRId != "");
+				$("#gpsQRArea").removeClass("is-loading");
+
+				AAPI_GA_EVENT("util_qr_generated", "GPS", key);
+			},
+			error: function () {
+				onFail("QR 코드를 생성하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+			}
+		});
+	});
+}
 
 function setCaptcha(fd, successHandler, failHandler) {
 	AAPI_getCaptchaToken(function(token) {
@@ -364,7 +496,8 @@ function requestAddress() {
 			oldAddressVal = r.data.address;
 			showLocationOnMap(oldLatVal, oldLngVal);
 			AAPI_showDialog("좌표를 주소로 변환 하였습니다.");
-			hideLoader();				
+			hideLoader();
+			generateLocationQR(oldLatVal, oldLngVal);				
 		}
 		else {
 			AAPI_showDialog("좌표의 변환에 오류가 발생했습니다. 다시 시도해 주세요");
@@ -418,7 +551,8 @@ function requestGPS() {
 				showLocationOnMap(r.data.lat, r.data.lng);
 
 				AAPI_showDialog("주소를 좌표로 변환 하였습니다.");
-				hideLoader();					    					    					  
+				hideLoader();
+				generateLocationQR(r.data.lat, r.data.lng);					    					    					  
 		}
 		else {
 				hideLoader();
