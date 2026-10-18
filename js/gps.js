@@ -133,8 +133,12 @@ function initMap() {
 
 	// 마커 드래그
 	gpsMarkerTranslate = new ol.interaction.Translate({ features: new ol.Collection([gpsMarker]) });
+	var dragStartCoordinate = null;
+	gpsMarkerTranslate.on('translatestart', function () {
+		dragStartCoordinate = gpsMarker.getGeometry().getCoordinates().slice();
+	});
 	gpsMarkerTranslate.on('translateend', function (e) {
-		onMarkerMoved(e.coordinate);
+		onMarkerMoved(e.coordinate, dragStartCoordinate);
 	});
 	gpsMap.addInteraction(gpsMarkerTranslate);
 
@@ -145,9 +149,11 @@ function initMap() {
 			return;
 		}
 		if (gpsMap.hasFeatureAtPixel(e.pixel)) return;
+		var prevCoordinate = null;
 		if (gpsMarkerSource.getFeatures().length == 0) gpsMarkerSource.addFeature(gpsMarker);
+		else prevCoordinate = gpsMarker.getGeometry().getCoordinates().slice();
 		gpsMarker.setGeometry(new ol.geom.Point(e.coordinate));
-		onMarkerMoved(e.coordinate);
+		onMarkerMoved(e.coordinate, prevCoordinate);
 	});
 
 	gpsMap.on('pointermove', function (e) {
@@ -160,48 +166,37 @@ function initMap() {
 		if (isMarkerMoveLocked() && gpsMap.hasFeatureAtPixel(e.pixel)) AAPI_showDialog(getMarkerMoveLockMessage());
 	});
 
-	refreshMarkerMoveLimit();
+	loadMarkerLimitStatus();
 }
 
 // ===== 마커 이동 횟수 제한 =====
-// 마커를 MARKER_MOVE_LIMIT 회 옮기면 MARKER_MOVE_LOCK_MS 동안 마커 이동(드래그/더블 클릭)을 막는다.
-// 브라우저(localStorage) 기준 제한이므로 저장소를 지우거나 다른 브라우저를 쓰면 초기화된다.
-
-var MARKER_MOVE_LIMIT = 10;
-var MARKER_MOVE_LOCK_MS = 2 * 60 * 60 * 1000;
-var MARKER_MOVE_STORAGE_KEY = "gps_marker_move_limit";
+// 제한은 서버가 IP 기준으로 판단한다. 화면은 서버가 알려준 상태로 드래그/더블 클릭을 막고 안내만 한다.
 
 var gpsMarkerTranslate = null;
-var markerMoveState = null;
+var markerMoveLimit = null;		// { limit, remaining, lockedUntil(ms) } - 서버 응답 전이면 null
 var markerMoveUnlockTimer = null;
 
-function loadMarkerMoveState() {
-	if (markerMoveState != null) return markerMoveState;
-	markerMoveState = { count: 0, lockedUntil: 0 };
-	try {
-		var saved = JSON.parse(localStorage.getItem(MARKER_MOVE_STORAGE_KEY));
-		if (saved != null) {
-			markerMoveState.count = parseInt(saved.count, 10) || 0;
-			markerMoveState.lockedUntil = parseInt(saved.lockedUntil, 10) || 0;
-		}
-	} catch (e) {}
-	return markerMoveState;
+// 서버 응답의 marker_limit 반영. 시계 차이를 피하려고 남은 초 기준으로 해제 시각 계산
+function applyMarkerLimitInfo(info) {
+	if (info == null) return;
+	markerMoveLimit = {
+		limit: parseInt(info.limit, 10) || 0,
+		remaining: parseInt(info.remaining, 10) || 0,
+		lockedUntil: info.locked ? Date.now() + (parseInt(info.lock_remaining_sec, 10) || 0) * 1000 : 0
+	};
+	refreshMarkerMoveLimit();
 }
 
-function saveMarkerMoveState() {
-	try { localStorage.setItem(MARKER_MOVE_STORAGE_KEY, JSON.stringify(markerMoveState)); } catch (e) {}
+function loadMarkerLimitStatus() {
+	let fd = new FormData();
+	fd.append("action", "marker_limit_status");
+	ajaxRequest(fd, function (r) {
+		if (r.result == "success" && r.data != null) applyMarkerLimitInfo(r.data.marker_limit);
+	}, function () {});
 }
 
 function isMarkerMoveLocked() {
-	var state = loadMarkerMoveState();
-	if (state.lockedUntil == 0) return false;
-	if (Date.now() < state.lockedUntil) return true;
-
-	// 제한 시간이 지나면 횟수 초기화
-	state.count = 0;
-	state.lockedUntil = 0;
-	saveMarkerMoveState();
-	return false;
+	return markerMoveLimit != null && markerMoveLimit.lockedUntil > Date.now();
 }
 
 function formatUnlockTime(time) {
@@ -213,34 +208,36 @@ function formatUnlockTime(time) {
 }
 
 function getMarkerMoveLockMessage() {
-	return "마커 이동은 " + MARKER_MOVE_LIMIT + "회까지 사용할 수 있습니다.<br>"
-		+ formatUnlockTime(loadMarkerMoveState().lockedUntil) + " 이후에 다시 이용해 주세요.";
-}
-
-// 마커 이동 1회 기록. 제한에 도달하면 true
-function countMarkerMove() {
-	var state = loadMarkerMoveState();
-	state.count++;
-	if (state.count >= MARKER_MOVE_LIMIT) state.lockedUntil = Date.now() + MARKER_MOVE_LOCK_MS;
-	saveMarkerMoveState();
-	refreshMarkerMoveLimit();
-	return state.lockedUntil != 0;
+	return "마커 이동은 " + markerMoveLimit.limit + "회까지 사용할 수 있습니다.<br>"
+		+ formatUnlockTime(markerMoveLimit.lockedUntil) + " 이후에 다시 이용해 주세요.";
 }
 
 // 드래그 가능 여부, 안내 문구, 해제 타이머 갱신
 function refreshMarkerMoveLimit() {
 	var locked = isMarkerMoveLocked();
-	var state = loadMarkerMoveState();
 
 	if (gpsMarkerTranslate != null) gpsMarkerTranslate.setActive(!locked);
 
 	var $status = $("#markerMoveStatus");
 	if (locked) {
-		$status.addClass("is-locked").text("마커 이동 횟수를 모두 사용했습니다. " + formatUnlockTime(state.lockedUntil) + " 이후에 다시 이용할 수 있습니다.");
+		$status.addClass("is-locked").text("마커 이동 횟수를 모두 사용했습니다. " + formatUnlockTime(markerMoveLimit.lockedUntil) + " 이후에 다시 이용할 수 있습니다.");
+	}
+	else {
+		$status.removeClass("is-locked").text("");
 	}
 
+	// 해제 시각이 지나면 서버 상태를 다시 읽어 옴
 	clearTimeout(markerMoveUnlockTimer);
-	if (locked) markerMoveUnlockTimer = setTimeout(refreshMarkerMoveLimit, Math.max(state.lockedUntil - Date.now(), 0) + 1000);
+	if (locked) markerMoveUnlockTimer = setTimeout(function () {
+		refreshMarkerMoveLimit();
+		loadMarkerLimitStatus();
+	}, Math.max(markerMoveLimit.lockedUntil - Date.now(), 0) + 1000);
+}
+
+// 서버가 이동을 거부했을 때 마커를 이동 전 위치로 되돌림
+function restoreMarker(prevCoordinate) {
+	if (prevCoordinate != null) gpsMarker.setGeometry(new ol.geom.Point(prevCoordinate));
+	else gpsMarkerSource.removeFeature(gpsMarker);
 }
 
 // OSM 타일 사용 정책상 Referer 가 필요하므로 no-referrer 환경에서도 origin 을 보내도록 지정
@@ -311,9 +308,11 @@ function showLocationOnMap(lat, lng) {
 	gpsMap.getView().animate({ center: coord, zoom: Math.max(gpsMap.getView().getZoom(), 16), duration: 500 });
 }
 
-function onMarkerMoved(coordinate) {
-	var lockedNow = countMarkerMove();
-	$("#mapLocationNotice").html(lockedNow ? getMarkerMoveLockMessage() : "");
+function onMarkerMoved(coordinate, prevCoordinate) {
+	$("#mapLocationNotice").html("");
+
+	var prevLat = $("#lat").val();
+	var prevLng = $("#lng").val();
 
 	var lonLat = ol.proj.toLonLat(coordinate);
 	var lat = Math.round(lonLat[1] * 1000000) / 1000000;
@@ -328,10 +327,25 @@ function onMarkerMoved(coordinate) {
 	fd.append("action", "address_by_gps");
 	fd.append("lat", lat);
 	fd.append("lng", lng);
+	fd.append("source", "marker");		// 서버가 IP 기준 이동 횟수를 셈
 
 	showLoader();
 	setCaptcha(fd, function (r) {
 		hideLoader();
+		if (r.data != null) applyMarkerLimitInfo(r.data.marker_limit);
+
+		// 서버가 이동 제한 중이라고 응답하면 이동을 취소
+		if (r.result != "success" && r.message == "marker_move_locked") {
+			restoreMarker(prevCoordinate);
+			$("#lat").val(prevLat);
+			$("#lng").val(prevLng);
+			if (isMarkerMoveLocked()) AAPI_showDialog(getMarkerMoveLockMessage());
+			return;
+		}
+
+		// 이번 이동으로 제한에 도달했으면 모달에 안내
+		if (isMarkerMoveLocked()) $("#mapLocationNotice").html(getMarkerMoveLockMessage());
+
 		var address = null;
 		if (r.result == "success" && r.data != null && AAPI_isSet(r.data.address)) {
 			address = r.data.address;
@@ -556,6 +570,16 @@ function requestCurrentLocation() {
 	{ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
 }
 
+// 서버가 오늘 변환 한도를 넘었다고 응답했는지
+function isConvertLimitExceeded(r) {
+	return r != null && r.result != "success" && r.message == "convert_limit_exceeded";
+}
+
+function showConvertLimitDialog(r) {
+	var limit = (r.data != null && r.data.convert_limit != null) ? r.data.convert_limit.limit : "";
+	AAPI_showDialog("오늘 사용할 수 있는 변환 횟수(" + limit + "회)를 모두 사용했습니다.<br>내일 다시 이용해 주세요.");
+}
+
 function requestAddress() {
 	let fd = new FormData();
 	fd.append("action", "address_by_gps");
@@ -589,6 +613,13 @@ function requestAddress() {
 			AAPI_showDialog("좌표를 주소로 변환 하였습니다.");
 			hideLoader();
 			generateLocationQR(oldLatVal, oldLngVal);				
+		}
+		else if (isConvertLimitExceeded(r)) {
+			// 같은 좌표로 다시 시도할 수 있도록 초기화
+			oldLatVal = -999;
+			oldLngVal = -999;
+			hideLoader();
+			showConvertLimitDialog(r);
 		}
 		else {
 			AAPI_showDialog("좌표의 변환에 오류가 발생했습니다. 다시 시도해 주세요");
@@ -644,6 +675,12 @@ function requestGPS() {
 				AAPI_showDialog("주소를 좌표로 변환 하였습니다.");
 				hideLoader();
 				generateLocationQR(r.data.lat, r.data.lng);					    					    					  
+		}
+		else if (isConvertLimitExceeded(r)) {
+				// 같은 주소로 다시 시도할 수 있도록 초기화
+				oldAddressVal = "";
+				hideLoader();
+				showConvertLimitDialog(r);
 		}
 		else {
 				hideLoader();
