@@ -590,6 +590,17 @@ function requestAddress() {
 		return;
     }
 
+	// 도분초(DMS) 입력도 허용: 십진수로 바꿔 입력칸에 반영
+	var latNum = GpsCoord.parse($("#lat").val(), "lat");
+	var lngNum = GpsCoord.parse($("#lng").val(), "lng");
+	if (isNaN(latNum) || isNaN(lngNum)) {
+		hideLoader();
+		AAPI_showDialog("올바른 좌표를 입력해 주세요");
+		return;
+	}
+	$("#lat").val(GpsCoord.round6(latNum));
+	$("#lng").val(GpsCoord.round6(lngNum));
+
 	//같은 값으로 조회 시도
 	if (oldLatVal == ($("#lat").val() * 1) && oldLngVal == ($("#lng").val() * 1)) {
 		hideLoader();

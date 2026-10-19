@@ -1,0 +1,29 @@
+# gps.aply.biz
+# 모든 검색엔진·AI 검색 크롤러 허용. 모달로 불러오는 조각 파일만 제외.
+
+User-agent: *
+Allow: /
+Disallow: /contact_privacy.html
+Disallow: /service.html
+
+# 네이버
+User-agent: Yeti
+Allow: /
+Disallow: /contact_privacy.html
+Disallow: /service.html
+
+# AI 검색 색인 · 실시간 열람 · 학습 (인용 유입을 위해 허용)
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+Allow: /
+Disallow: /contact_privacy.html
+Disallow: /service.html
+
+Sitemap: https://gps.aply.biz/sitemap.xml

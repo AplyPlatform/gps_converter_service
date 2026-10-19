@@ -1,0 +1,112 @@
+/* 좌표 가이드 페이지 */
+:root {
+  --guide-text: #2b2f33;
+  --guide-muted: #6b7178;
+  --guide-line: #e8ebee;
+  --guide-accent: #158b7e;
+  --guide-bg: #f7f8fa;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--guide-bg);
+  color: var(--guide-text);
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+a { color: var(--guide-accent); }
+
+.guide-wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+
+.guide-nav { background: #fff; border-bottom: 1px solid var(--guide-line); }
+.guide-nav .guide-wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.guide-logo img { display: block; height: 24px; width: auto; }
+.guide-tool-link { font-size: 14px; font-weight: 700; text-decoration: none; }
+
+main.guide-wrap { padding-top: 1.25rem; padding-bottom: 3rem; }
+.guide-breadcrumb { margin: 0 0 1rem; font-size: 13px; color: var(--guide-muted); }
+.guide-breadcrumb a { color: var(--guide-muted); }
+
+article {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  padding: 2rem;
+}
+article h1 { margin: 0 0 1rem; font-size: 1.75rem; line-height: 1.35; }
+article h2 { margin: 2.25rem 0 0.75rem; font-size: 1.2rem; }
+article h3 { margin: 1.25rem 0 0.25rem; font-size: 1rem; }
+article p, article ol, article ul { margin: 0 0 1rem; }
+
+.guide-lead {
+  padding: 1rem 1.25rem;
+  background: #eef8f6;
+  border-left: 4px solid var(--guide-accent);
+  border-radius: 6px;
+  font-size: 1.05rem;
+}
+
+.guide-table-wrap { overflow-x: auto; margin: 0 0 1rem; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--guide-line); text-align: left; vertical-align: top; }
+thead th { background: var(--guide-bg); font-weight: 700; white-space: nowrap; }
+
+.guide-note { font-size: 14px; color: var(--guide-muted); }
+.guide-meta { margin-top: 2rem; font-size: 13px; color: var(--guide-muted); }
+
+.guide-cta {
+  display: inline-block;
+  padding: 0.6rem 1.1rem;
+  background: var(--guide-accent);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.guide-cta:hover { background: #117266; }
+
+.guide-index { padding-left: 1.25rem; }
+.guide-index li { margin: 0.4rem 0; font-size: 1.05rem; }
+
+/* 변환기 / 현재 위치 도구 */
+.guide-tool {
+  margin: 0 0 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--guide-line);
+  border-radius: 10px;
+  background: var(--guide-bg);
+}
+.guide-tool label { display: block; margin-bottom: 0.4rem; font-size: 14px; font-weight: 700; }
+.guide-tool-row { display: flex; gap: 8px; }
+.guide-tool select, .guide-tool input, .guide-tool button {
+  height: 44px;
+  border: 1px solid #cfd5da;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+}
+.guide-tool select { padding: 0 0.5rem; background: #fff; }
+.guide-tool input { flex: 1; min-width: 0; padding: 0 0.75rem; }
+.guide-tool button { padding: 0 1.1rem; background: var(--guide-accent); border-color: var(--guide-accent); color: #fff; font-weight: 700; cursor: pointer; }
+.guide-tool button:disabled { opacity: 0.6; cursor: wait; }
+.guide-tool-result { display: grid; grid-template-columns: 5rem 1fr; gap: 0.35rem 1rem; margin: 1rem 0 0; }
+.guide-tool-result dt { font-weight: 700; color: var(--guide-muted); }
+.guide-tool-result dd { margin: 0; font-family: Consolas, 'Courier New', monospace; font-size: 17px; }
+.guide-tool-error { margin: 0.75rem 0 0; color: #c0392b; font-size: 14px; }
+.guide-tool [hidden] { display: none; }
+
+.guide-footer { padding: 1.5rem 0 2.5rem; font-size: 13px; color: var(--guide-muted); text-align: center; }
+.guide-footer a { color: var(--guide-muted); }
+
+@media screen and (max-width: 640px) {
+  article { padding: 1.25rem; border-radius: 10px; }
+  article h1 { font-size: 1.4rem; }
+  table { font-size: 13px; }
+  th, td { padding: 0.5rem 0.4rem; }
+  thead th { white-space: normal; }
+}

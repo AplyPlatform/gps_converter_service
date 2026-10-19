@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+	<head>
+	<meta charset="utf-8">
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-LRBVFWS910"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-LRBVFWS910');
+	</script>
+	<title>위도·경도 소수점 자리수별 정밀도 - 몇 자리면 충분할까 | APLY</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<meta name="description" content="위도·경도 소수점 6자리는 위도 방향 약 0.11m 단위입니다. 소수점 1~7자리가 실제 몇 m인지 서울(북위 37.57°) 기준 위도·경도 방향 거리로 정리했습니다."/>
+	<link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+	<link rel="canonical" href="https://gps.aply.biz/guide/coordinate-precision/">
+	<meta property="og:type" content="article"/>
+	<meta property="og:locale" content="ko_KR"/>
+	<meta property="og:title" content="위도·경도 소수점 자리수별 정밀도 - 몇 자리면 충분할까 | APLY"/>
+	<meta property="og:description" content="위도·경도 소수점 6자리는 위도 방향 약 0.11m 단위입니다. 소수점 1~7자리가 실제 몇 m인지 서울(북위 37.57°) 기준 위도·경도 방향 거리로 정리했습니다."/>
+	<meta property="og:image" content="https://home.aply.biz/assets/img/og_site_title.png"/>
+	<meta property="og:url" content="https://gps.aply.biz/guide/coordinate-precision/"/>
+	<meta property="og:site_name" content="APLY GPS 좌표 ↔ 주소 변환"/>
+	<meta name="twitter:card" content="summary_large_image"/>
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@graph": [
+			{
+				"@type": "Organization",
+				"@id": "https://aply.biz/#organization",
+				"name": "주식회사 어플라이",
+				"alternateName": "APLY Inc.",
+				"url": "https://aply.biz/"
+			},
+			{
+				"@type": "Article",
+				"@id": "https://gps.aply.biz/guide/coordinate-precision/#article",
+				"headline": "위도·경도 소수점 자리수별 정밀도",
+				"description": "위도·경도 소수점 6자리는 위도 방향 약 0.11m 단위입니다. 소수점 1~7자리가 실제 몇 m인지 서울(북위 37.57°) 기준 위도·경도 방향 거리로 정리했습니다.",
+				"url": "https://gps.aply.biz/guide/coordinate-precision/",
+				"mainEntityOfPage": "https://gps.aply.biz/guide/coordinate-precision/",
+				"inLanguage": "ko",
+				"datePublished": "2026-10-19",
+				"dateModified": "2026-10-19",
+				"author": {
+					"@id": "https://aply.biz/#organization"
+				},
+				"publisher": {
+					"@id": "https://aply.biz/#organization"
+				}
+			},
+			{
+				"@type": "BreadcrumbList",
+				"itemListElement": [
+					{
+						"@type": "ListItem",
+						"position": 1,
+						"name": "홈",
+						"item": "https://gps.aply.biz/"
+					},
+					{
+						"@type": "ListItem",
+						"position": 2,
+						"name": "좌표 가이드",
+						"item": "https://gps.aply.biz/guide/"
+					},
+					{
+						"@type": "ListItem",
+						"position": 3,
+						"name": "위도·경도 소수점 자리수별 정밀도",
+						"item": "https://gps.aply.biz/guide/coordinate-precision/"
+					}
+				]
+			},
+			{
+				"@type": "FAQPage",
+				"@id": "https://gps.aply.biz/guide/coordinate-precision/#faq",
+				"inLanguage": "ko",
+				"mainEntity": [
+					{
+						"@type": "Question",
+						"name": "위도·경도는 소수점 몇 자리까지 쓰면 되나요?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "소수점 5자리는 위도 방향 약 1.1m, 6자리는 약 0.11m 단위입니다. 스마트폰 GPS의 일반적인 오차가 수 m이므로 위치를 가리키는 데는 소수점 5~6자리로 충분합니다."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "같은 자리수인데 경도 방향 거리가 더 짧은 이유는 무엇인가요?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "경도 1°의 길이는 적도에서 가장 길고 극으로 갈수록 짧아지기 때문입니다. 북위 37.57°(서울)에서 경도 1°는 약 88.3km, 위도 1°는 약 111.0km입니다."
+						}
+					}
+				]
+			}
+		]
+	}
+	</script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="/css/guide.css?v=20261019_01">
+	</head>
+	<body>
+	<nav class="guide-nav">
+		<div class="guide-wrap">
+			<a href="/" class="guide-logo"><img src="/images/logo_aply.png" alt="APLY" height="24"></a>
+			<a href="/" class="guide-tool-link">GPS 좌표 ↔ 주소 변환 →</a>
+		</div>
+	</nav>
+	<main class="guide-wrap">
+		<p class="guide-breadcrumb"><a href="https://gps.aply.biz/">홈</a> <span aria-hidden="true">›</span> <a href="https://gps.aply.biz/guide/">좌표 가이드</a> <span aria-hidden="true">›</span> <span>위도·경도 소수점 자리수별 정밀도</span></p>
+		<article>
+			<h1>위도·경도 소수점 자리수별 정밀도</h1>
+			<p class="guide-lead">위도·경도 소수점 <strong>6자리는 위도 방향 약 0.11m</strong>, 5자리는 약 1.1m 단위입니다. 경도 방향은 위도가 높을수록 짧아져 서울에서는 위도 방향의 약 80%입니다.</p>
+			<h2>소수점 자리수별 거리 (서울, 북위 37.57° 기준)</h2>
+			<div class="guide-table-wrap"><table>
+				<thead><tr><th scope="col">소수 자리</th><th scope="col">좌표 단위</th><th scope="col">위도 방향 거리</th><th scope="col">경도 방향 거리</th></tr></thead>
+				<tbody>
+					<tr><td>1자리</td><td>0.1°</td><td>약 11.1km</td><td>약 8.8km</td></tr>
+					<tr><td>2자리</td><td>0.01°</td><td>약 1.1km</td><td>약 883m</td></tr>
+					<tr><td>3자리</td><td>0.001°</td><td>약 111m</td><td>약 88.3m</td></tr>
+					<tr><td>4자리</td><td>0.0001°</td><td>약 11.1m</td><td>약 8.8m</td></tr>
+					<tr><td>5자리</td><td>0.00001°</td><td>약 1.1m</td><td>약 0.88m</td></tr>
+					<tr><td>6자리</td><td>0.000001°</td><td>약 0.11m</td><td>약 8.8cm</td></tr>
+					<tr><td>7자리</td><td>0.0000001°</td><td>약 1.1cm</td><td>약 8.8mm</td></tr>
+				</tbody>
+			</table></div>
+			<p class="guide-note">계산 기준: WGS84 타원체. 북위 37.57°에서 위도 1° = 110,988m, 경도 1° = 88,343m. 위도 1°의 길이는 적도 110,574m ~ 극 111,694m로 거의 일정하고, 경도 1°의 길이는 위도의 코사인에 비례해 줄어듭니다.</p>
+			<h2>국내 지역별 경도 1°의 길이</h2>
+			<div class="guide-table-wrap"><table>
+				<thead><tr><th scope="col">지역 (위도)</th><th scope="col">경도 1°</th><th scope="col">경도 소수점 6자리</th></tr></thead>
+				<tbody>
+					<tr><td>제주 (북위 33.5°)</td><td>약 92.9km</td><td>약 9.3cm</td></tr>
+					<tr><td>부산 (북위 35.18°)</td><td>약 91.1km</td><td>약 9.1cm</td></tr>
+					<tr><td>서울 (북위 37.57°)</td><td>약 88.3km</td><td>약 8.8cm</td></tr>
+					<tr><td>강원 북부 (북위 38.5°)</td><td>약 87.2km</td><td>약 8.7cm</td></tr>
+				</tbody>
+			</table></div>
+			<h2>GPS 오차와 비교하면</h2>
+			<p>미국 정부 GPS 공식 안내(GPS.gov)에 따르면 GPS를 쓰는 스마트폰의 위치는 맑은 하늘 아래에서 보통 반경 4.9m 안으로 정확합니다. 소수점 5자리(약 1.1m)보다 작은 단위는 이 오차보다 작으므로, 자리수를 더 늘려도 실제 위치가 더 정확해지지는 않습니다. <a href="https://www.gps.gov/systems/gps/performance/accuracy/" rel="noopener" target="_blank">출처: GPS.gov – GPS Accuracy</a></p>
+			<p>gps.aply.biz는 입력한 좌표, 지도에서 고른 위치, 현재 위치를 소수점 6자리로 반올림해 사용합니다.</p>
+			<p><a class="guide-cta" href="/">좌표로 주소 찾기 →</a></p>
+			<h2>자주 묻는 질문</h2>
+			<h3>위도·경도는 소수점 몇 자리까지 쓰면 되나요?</h3>
+			<p>소수점 5자리는 위도 방향 약 1.1m, 6자리는 약 0.11m 단위입니다. 스마트폰 GPS의 일반적인 오차가 수 m이므로 위치를 가리키는 데는 소수점 5~6자리로 충분합니다.</p>
+			<h3>같은 자리수인데 경도 방향 거리가 더 짧은 이유는 무엇인가요?</h3>
+			<p>경도 1°의 길이는 적도에서 가장 길고 극으로 갈수록 짧아지기 때문입니다. 북위 37.57°(서울)에서 경도 1°는 약 88.3km, 위도 1°는 약 111.0km입니다.</p>
+			<h2>다른 좌표 가이드</h2>
+			<ul>
+				<li><a href="https://gps.aply.biz/guide/dms-decimal/">도분초(DMS) 좌표를 십진수로 바꾸는 방법</a></li>
+				<li><a href="https://gps.aply.biz/guide/my-location/">내 현재 위치의 위도·경도 확인하는 방법</a></li>
+			</ul>
+			<p class="guide-meta">작성: 주식회사 어플라이 · 최종 수정 <time datetime="2026-10-19">2026-10-19</time></p>
+		</article>
+	</main>
+	<footer class="guide-footer">
+		<div class="guide-wrap">
+			<a href="/">GPS 좌표 ↔ 주소 변환</a> · <a href="/guide/">좌표 가이드</a> · &copy; <a href="https://aply.biz/">APLY Inc.</a>
+		</div>
+	</footer>
+	</body>
+</html>

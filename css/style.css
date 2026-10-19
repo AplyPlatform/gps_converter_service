@@ -528,6 +528,7 @@ form label {font-weight: normal !important;}
 
 #gtco-header2 {
   background: url('../images/title_img_3.jpg') no-repeat center top;
+  background-image: image-set(url('../images/title_img_3.avif') type('image/avif'), url('../images/title_img_3.jpg') type('image/jpeg'));
   background-color: black;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -1380,6 +1381,24 @@ form label {font-weight: normal !important;}
   font-size: 14px;
   color: #888;
   margin: 0;
+}
+
+/* ===== 사용 방법 · 자주 묻는 질문 ===== */
+.faq-list { margin: 0 0 2rem; }
+.faq-item { padding: 1rem 0; border-bottom: 1px solid #f0f0f0; }
+.faq-item:first-child { padding-top: 0; }
+.faq-q { margin: 0 0 0.4rem; font-size: 16px; font-weight: 700; color: #222; word-break: keep-all; }
+.faq-a { margin: 0; font-size: 14px; line-height: 1.7; color: #555; word-break: keep-all; }
+.guide-subtitle { margin: 0 0 0.75rem; font-size: 13px; font-weight: 700; color: #45cdba; letter-spacing: 0.06em; }
+.spec-table { width: 100%; border-collapse: collapse; margin: 0 0 2rem; font-size: 14px; }
+.spec-table th, .spec-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #f0f0f0; text-align: left; vertical-align: top; word-break: keep-all; }
+.spec-table th { width: 34%; color: #333; font-weight: 700; background: #fafbfc; }
+.spec-table td { color: #555; }
+.guide-links { margin: 0; padding: 0; list-style: none; }
+.guide-links li { padding: 0.35rem 0; font-size: 14px; }
+.guide-links a { color: #158b7e; text-decoration: underline; }
+@media screen and (max-width: 640px) {
+  .spec-table th { width: 40%; }
 }
 
 /* ===== 공통 콘텐츠 카드 ===== */
