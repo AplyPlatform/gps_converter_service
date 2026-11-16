@@ -412,7 +412,7 @@ $(document).on("click", ".copy-btn[data-copy-target]", function () {
 // ===== 위치 QR 코드 (qr.aply.biz 와 같은 백엔드 사용) =====
 
 var QR_API_HANDLER = "https://aplx.link/qr/handler.php";
-var GPS_SITE_URL = "https://gps.aply.biz/";
+var GPS_SITE_URL = "https://gps.aply.biz/index_b2b.html";
 
 var gpsQRCode = null;
 var lastQRLocation = "";
